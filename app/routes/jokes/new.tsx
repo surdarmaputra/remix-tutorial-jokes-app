@@ -1,5 +1,6 @@
 import { ActionFunction, Form, Link, LoaderFunction, useCatch } from "remix";
-import { redirect, useActionData, json } from 'remix'
+import { redirect, useActionData, useTransition, json } from 'remix'
+import { JokeDisplay } from "~/components/JokeDisplay";
 
 import { db } from "~/utils/db.server";
 import { getUserId, requireUserId } from "~/utils/session.server";
@@ -120,6 +121,26 @@ export function CatchBoundary() {
 
 export default function NewJokeRoute() {
   const { fieldErrors, values } = useActionData<ActionData>() || {}
+  const transition = useTransition()
+
+  if (transition.submission) {
+    const name = transition.submission.formData.get("name");
+    const content = transition.submission.formData.get("content");
+    if (
+      typeof name === "string" &&
+      typeof content === "string" &&
+      !validateContent(content) &&
+      !validateName(name)
+    ) {
+      return (
+        <JokeDisplay
+          joke={{ name, content }}
+          isOwner={true}
+          canDelete={false}
+        />
+      );
+    }
+  }
 
   return (
     <div>

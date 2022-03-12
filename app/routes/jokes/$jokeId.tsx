@@ -1,6 +1,7 @@
 import type { Joke } from "@prisma/client";
 import type { ActionFunction, LoaderFunction, MetaFunction } from "remix";
 import { json, useLoaderData, redirect, useCatch, useParams, Link } from 'remix'
+import { JokeDisplay } from "~/components/JokeDisplay";
 
 import { db } from "~/utils/db.server";
 import { getUserId, requireUserId } from "~/utils/session.server";
@@ -119,25 +120,5 @@ export function ErrorBoundary() {
 export default function JokeRoute() {
   const { joke, isOwner } = useLoaderData<LoaderData>()
 
-  return (
-    <div>
-      <p>Here's your hilarious joke:</p>
-      <p>
-        {joke.content}
-      </p>
-      <Link to=".">{joke.name} Permalink</Link>
-      {isOwner ? (
-        <form method="post">
-          <input
-            type="hidden"
-            name="_method"
-            value="delete"
-          />
-          <button type="submit" className="button">
-            Delete
-          </button>
-        </form>
-      ) : null}
-    </div>
-  );
+  return <JokeDisplay joke={joke} isOwner={isOwner} />;
 }
