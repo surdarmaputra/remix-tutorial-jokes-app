@@ -1,5 +1,5 @@
 import type { Joke } from "@prisma/client";
-import type { ActionFunction, LoaderFunction } from "remix";
+import type { ActionFunction, LoaderFunction, MetaFunction } from "remix";
 import { json, useLoaderData, redirect, useCatch, useParams, Link } from 'remix'
 
 import { db } from "~/utils/db.server";
@@ -58,6 +58,23 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     isOwner: userId === joke.jokesterId,
   });
 }
+
+export const meta: MetaFunction = ({
+  data,
+}: {
+  data: LoaderData | undefined;
+}) => {
+  if (!data) {
+    return {
+      title: "No joke",
+      description: "No joke found",
+    };
+  }
+  return {
+    title: `"${data.joke.name}" joke`,
+    description: `Enjoy the "${data.joke.name}" joke and much more`,
+  };
+};
 
 export function CatchBoundary() {
   const caught = useCatch();

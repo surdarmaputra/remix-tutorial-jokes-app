@@ -1,4 +1,4 @@
-import { ActionFunction, LinksFunction, useActionData } from "remix";
+import { ActionFunction, LinksFunction, MetaFunction, useActionData } from "remix";
 import { json, Link, useSearchParams } from "remix";
 import { db } from "~/utils/db.server";
 import { createUserSession, login, register } from "~/utils/session.server";
@@ -144,6 +144,14 @@ export const action: ActionFunction = async ({ request }) => {
 
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: stylesUrl }];
+};
+
+export const meta: MetaFunction = () => {
+  return {
+    title: "Remix Jokes | Login",
+    description:
+      "Login to submit your own jokes to Remix Jokes!",
+  };
 };
 
 export default function Login() {
