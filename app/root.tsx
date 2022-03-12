@@ -1,4 +1,4 @@
-import { LinksFunction } from "remix";
+import { LinksFunction, useCatch } from "remix";
 import { Links, LiveReload, Outlet } from "remix";
 
 import globalStylesUrl from "./styles/global.css";
@@ -24,18 +24,65 @@ export const links: LinksFunction = () => {
   ];
 };
 
-export default function App() {
+interface DocumentProps {
+  children: React.ReactNode;
+  title?: string;
+}
+
+function Document({
+  children,
+  title = 'Remix: So great, it\'s funny!'
+}: DocumentProps) {
   return (
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
-        <title>Remix: So great, it's funny!</title>
+        <title>{title}</title>
         <Links />
       </head>
       <body>
-        <Outlet />
+        {children}
         <LiveReload />
       </body>
     </html>
+  )
+}
+
+export function CatchBoundary() {
+  const caught = useCatch();
+
+  return (
+    <Document
+      title={`${caught.status} ${caught.statusText}`}
+    >
+      <div className="error-container">
+        <h1>
+          {caught.status} {caught.statusText}
+        </h1>
+      </div>
+    </Document>
+  );
+}
+
+interface ErrorBoundaryProps {
+  error: Error;
+}
+
+export function ErrorBoundary({ error }: ErrorBoundaryProps) {
+  return (
+    <Document title="Uh-oh!">
+      <div className="error-container">
+        <h1>App Error</h1>
+        <pre>{error.message}</pre>
+      </div>
+    </Document>
+  )
+}
+
+export default function App() {
+  return (
+    <Document>
+      <Outlet />
+    </Document>
   );
 }

@@ -2,24 +2,46 @@ import { PrismaClient } from "@prisma/client";
 const db = new PrismaClient();
 
 async function seed() {
-  const kody = await db.user.create({
+  const users = await Promise.all(
+    getUsers().map((user) => {
+      return db.user.create({ data: user });
+    })
+  );
+
+  await Promise.all(
+    getJokes().map((joke) => {
+      const data = { jokesterId: users[0].id, ...joke };
+      return db.joke.create({ data });
+    })
+  );
+
+  await db.joke.create({
     data: {
+      name: 'Unknown',
+      content: 'Unknown',
+      jokesterId: users[1].id,
+    }
+  })
+}
+
+seed();
+
+function getUsers() {
+  return [
+    {
       username: "kody",
       // this is a hashed version of "twixrox"
       passwordHash:
         "$2b$10$K7L1OJ45/4Y2nIvhRVpCe.FSmhDdWoXehVzJptJ/op0lSsvqNu/1u",
     },
-  });
-
-  await Promise.all(
-    getJokes().map((joke) => {
-      const data = { jokesterId: kody.id, ...joke };
-      return db.joke.create({ data });
-    })
-  );
+    {
+      username: "koda",
+      // this is a hashed version of "twixrox"
+      passwordHash:
+        "$2b$10$K7L1OJ45/4Y2nIvhRVpCe.FSmhDdWoXehVzJptJ/op0lSsvqNu/1u",
+    },
+  ]
 }
-
-seed();
 
 function getJokes() {
   // shout-out to https://icanhazdadjoke.com/
