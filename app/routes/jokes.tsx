@@ -76,12 +76,15 @@ export default function JokesRoute() {
             <ul>
               {data.jokeListItems.map((joke) => (
                 <li key={joke.id}>
-                  <Link to={joke.id}>{joke.name}</Link>
+                  <Link to={joke.id} prefetch="intent">{joke.name}</Link>
                 </li>
               ))}
             </ul>
-            <Link to="new" className="button">
+            <Link to="new" className="button" prefetch="intent">
               Add your own
+            </Link>
+            <Link to="/jokes.rss" className="button">
+              RSS Feed
             </Link>
           </div>
           <div className="jokes-outlet">
